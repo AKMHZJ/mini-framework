@@ -45,8 +45,58 @@ function createDOM(vnode) {
   return element;
 }
 
+let prevVNode = null;
+
 export function render(vnode, container) {
-  const dom = createDOM(vnode);
-  container.innerHTML = "";
-  container.appendChild(dom);
+  if (prevVNode) {
+    updateDOM(prevVNode, vnode, container);
+  } else {
+    const dom = createDOM(vnode);
+    container.innerHTML = "";
+    container.appendChild(dom);
+  }
+  prevVNode = vnode;
+}
+
+
+function updateDOM(oldVNode, newVNode, parent) {
+  if (!oldVNode || oldVNode.tag != newVNode.tag) {
+    const newElement = createDOM(newVNode);
+    parent.replaceChild(newElement, oldVNode.element)
+    newVNode.element = newElement
+    return
+  }
+
+  newVNode.element = oldVNode.element
+  const oldAttrs = oldVNode.attrs
+  const newAttrs = newVNode.attrs
+
+  for (const key of Object.keys(oldAttrs)) {
+    if (!(key in newAttrs)) {
+      newVNode.element.removeAttribute(key);
+    }
+  }
+
+  for (const [key, value] of Object.entries(newAttrs)) {
+    if (oldAttrs[key] !== value) {
+      newVNode.element.setAttribute(key, value);
+    }
+  }
+
+  const oldChildren = oldVNode.children || [];
+  const newChildren = newVNode.children || [];
+  const maxLenght = Math.max(oldChildren.length, newChildren.length);
+
+  for (let i = 0; i < length; i++) {
+    if (i < oldChildren.length && i < newChildren.length) {
+      (oldChildren[i], newChildren[i], newVNode.element);
+    } else if (i < oldChildren.length) {
+      newVNode.element.removeChild(oldChildren[i].element);
+    } else {
+      const newChildElement = createDOM(newChildren[i]);
+      newVNode.element.appendChild(newChildElement);
+      newChildren[i].element = newChildElement;
+    }
+  }
+
 }

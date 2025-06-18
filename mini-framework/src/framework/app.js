@@ -2,11 +2,19 @@
 
 import { makeElement, render } from "./dom.js";
 
-const vdom = makeElement(
-  "div",
-  { class: "container" },
-  [makeElement("h1", {}, "hello, there"),
-  makeElement("button", { id: "btn" }, "click!")]
-);
+let count = 0;
 
-render(vdom, document.getElementById("app"));
+function App() {
+  return makeElement('div', { class: 'container' }, [
+    makeElement('h1', {}, `Count: ${count}`),
+    makeElement('button', { id: 'btn' }, 'Increment'),
+  ]);
+}
+
+render(App(), document.getElementById('app'));
+
+// Simulate a manual update (later tied to events/state)
+setTimeout(() => {
+  count++;
+  render(App(), document.getElementById('app'));
+}, 2000);

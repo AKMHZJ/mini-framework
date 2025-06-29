@@ -92,7 +92,6 @@
 
 
 
-
 export class Dispatcher {
     #subs = new Map()
     #afterHandlers = []
@@ -115,7 +114,6 @@ export class Dispatcher {
         }
     }
 
-
     //Register a function that runs after every command is handled.
     afterEveryCommand(handler) {
         //Registers the handler
@@ -126,6 +124,7 @@ export class Dispatcher {
             this.#afterHandlers.splice(idx, 1)
         }
     }
+    
     dispatch(commandName, payload) {
         //Checks whether handlers are registered and calls them
         if (this.#subs.has(commandName)) {
@@ -135,4 +134,5 @@ export class Dispatcher {
         }
         this.#afterHandlers.forEach((handler) => handler())
     }
+
 }

@@ -3,8 +3,8 @@
 import { initEventSystem } from './event.js';
 import { defineRoutes, navigate, initRouter } from './router.js';
 // import { makeElement, render } from './dom.js';
-import { makeElement } from './dom.js';
-
+import { makeElement, updateDOM, render } from './dom.js';
+import { Dispatcher } from './state.js'
 
 
 //  ###############test dom abstruction###################
@@ -84,3 +84,47 @@ const routes = [
 
 defineRoutes(routes);
 initRouter();
+
+export function createApp({ state, reducers = {} }) {
+  let parentEl = null
+  let vdom = null
+
+  const dispatcher = new Dispatcher()
+  //Re-renders the application after every command
+  const subscriptions = [dispatcher.afterEveryCommand(renderApp)]
+
+  function emit(eventName, payload) {
+    dispatcher.dispatch(eventName, payload)
+  }
+
+  for (const actionName in reducers) {
+    const reducer = reducers[actionName]
+    const subs = dispatcher.subscribe(actionName, (payload) => {
+      //Updates the state calling the reducer function
+      state = reducer(state, payload)
+    })
+    //Adds each command subscription to the subscriptions array
+    subscriptions.push(subs)
+
+  }
+  // function renderApp() {
+  //   if (vdom) {
+  //     updateDOM(vdom)
+  //   }
+  //   vdom = view(state, emit)
+  //   createDOM(vdom, parentEl)
+  // }
+  render(vdom, parentEl)
+  return {
+    //Method to mount the application in the DOM
+    mount(_parentEl) {
+      parentEl = _parentEl
+      render(vdom, parentEl)
+    },
+    unmount() {
+      updateDOM(vdom)
+      vdom = null
+      subscriptions.forEach((unsubscribe) => unsubscribe())
+    }
+  }
+}

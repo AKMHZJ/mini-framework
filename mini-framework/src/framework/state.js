@@ -46,93 +46,82 @@
 
 
 
-// createdom
-// export function mountDOM(vdom, parentEl) {
-//     switch (vdom.type) {
-//         case DOM_TYPES.TEXT: {
-//             createTextNode(vdom, parentEl)
-//             break
+
+
+
+// export class Dispatcher {
+//     #subs = new Map()
+//     #afterHandlers = []
+//     subscribe(commandName, handler) {
+//         //Creates the array of subscriptions if it doesn’t exist for a given command name
+//         if (!this.#subs.has(commandName)) {
+//             this.#subs.set(commandName, [])
 //         }
-//         case DOM_TYPES.ELEMENT: {
-//             createElementNode(vdom, parentEl)
-//             break
+//         const handlers = this.#subs.get(commandName)
+//         //Checks whether the handler is registered
+//         if (handlers.includes(handler)) {
+//             return () => { }
 //         }
-//         case DOM_TYPES.FRAGMENT: {
-//             createFragmentNodes(vdom, parentEl)
-//             break
-//         }
-//         default: {
-//             throw new Error(`Can't mount DOM of type: ${vdom.type}`)
+//         //Registers the handler
+//         handlers.push(handler)
+//         //Returns a function to unregister the handler
+//         return () => {
+//             const idx = handlers.indexOf(handler)
+//             handlers.splice(idx, 1)
 //         }
 //     }
-// }
-// // updatedom
-// export function destroyDOM(vdom) {
-//     const { type } = vdom
-//     switch (type) {
-//         case DOM_TYPES.TEXT: {
-//             removeTextNode(vdom)
-//             break
-//         }
-//         case DOM_TYPES.ELEMENT: {
-//             removeElementNode(vdom)
-//             break
-//         }
-//         case DOM_TYPES.FRAGMENT: {
-//             removeFragmentNodes(vdom)
-//             break
-//         }
-//         default: {
-//             throw new Error(`Can't destroy DOM of type: ${type}`)
+
+//     //Register a function that runs after every command is handled.
+//     afterEveryCommand(handler) {
+//         //Registers the handler
+//         this.#afterHandlers.push(handler)
+//         //Returns a function to unregister the handler
+//         return () => {
+//             const idx = this.#afterHandlers.indexOf(handler)
+//             this.#afterHandlers.splice(idx, 1)
 //         }
 //     }
-//     delete vdom.el
-// }
-
-
-
-
-export class Dispatcher {
-    #subs = new Map()
-    #afterHandlers = []
-    subscribe(commandName, handler) {
-        //Creates the array of subscriptions if it doesn’t exist for a given command name
-        if (!this.#subs.has(commandName)) {
-            this.#subs.set(commandName, [])
-        }
-        const handlers = this.#subs.get(commandName)
-        //Checks whether the handler is registered
-        if (handlers.includes(handler)) {
-            return () => { }
-        }
-        //Registers the handler
-        handlers.push(handler)
-        //Returns a function to unregister the handler
-        return () => {
-            const idx = handlers.indexOf(handler)
-            handlers.splice(idx, 1)
-        }
-    }
-
-    //Register a function that runs after every command is handled.
-    afterEveryCommand(handler) {
-        //Registers the handler
-        this.#afterHandlers.push(handler)
-        //Returns a function to unregister the handler
-        return () => {
-            const idx = this.#afterHandlers.indexOf(handler)
-            this.#afterHandlers.splice(idx, 1)
-        }
-    }
     
-    dispatch(commandName, payload) {
-        //Checks whether handlers are registered and calls them
-        if (this.#subs.has(commandName)) {
-            this.#subs.get(commandName).forEach((handler) => handler(payload))
-        } else {
-            console.warn(`No handlers for command: ${commandName}`)
-        }
-        this.#afterHandlers.forEach((handler) => handler())
+//     dispatch(commandName, payload) {
+//         //Checks whether handlers are registered and calls them
+//         if (this.#subs.has(commandName)) {
+//             this.#subs.get(commandName).forEach((handler) => handler(payload))
+//         } else {
+//             console.warn(`No handlers for command: ${commandName}`)
+//         }
+//         this.#afterHandlers.forEach((handler) => handler())
+//     }
+
+// }
+
+
+
+import {  render } from './dom.js';
+
+let callIndex = -1
+const stateValues = []
+
+//callIndex Must Reset on Every Render
+export const resetCallIndex = () => {
+    callIndex = -1
+}
+
+export const useState = (initialValue) => {
+    callIndex++
+    const currentCallIndex = callIndex
+    if (stateValues[currentCallIndex] === undefined) {
+        stateValues[currentCallIndex] = initialValue
     }
 
+    const setValue = (newValue) => {
+        //React allows passing a function to setState
+        if (typeof newValue === 'function') {
+            stateValues[currentCallIndex] = newValue(stateValues[currentCallIndex])
+        } else {
+            stateValues[currentCallIndex] = newValue
+        }
+        render()
+    }
+
+    return [stateValues[currentCallIndex], setValue]
 }

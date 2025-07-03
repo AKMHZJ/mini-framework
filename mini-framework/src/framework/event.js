@@ -55,3 +55,13 @@ function initEventSystem(container = document) {
     })
   })
 }
+
+/*************🌟 Find Registered Element 🌟*************/
+function findRegisteredElement(event) {
+  let target = event.target;
+  while (target && target !== document) {
+     
+  }
+  return null
+}
+

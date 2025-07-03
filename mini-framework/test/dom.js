@@ -16,6 +16,11 @@ function makeElement(tag, attrs = {}, children = []) {
   };
 }
 
+function render(vnode, container) {
+  container.innerHTML = ""
+  container.appendChild(makeElement(vnode));
+}
+
 
 // test1
 const el1 = makeElement("div");

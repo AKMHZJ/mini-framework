@@ -13,5 +13,6 @@ It provides a structured way to build web applications, enforce best practices, 
 
 - *Data Binding:* Data binding is a mechanism that establishes a connection between the data in your application and the user interface. This allows changes in the data to automatically update the UI and vice versa.
 
+- *Event Listeners:* A javascript event listener is essentially a JavaScript function that waits for a specific event to occur and then executes a callback function to respond to that event. Event listeners and event handlers are often considered the same thing. However, in essence, they work together to respond to an event.
 
-Javascript event listeners allow you to execute code when the user clicks a button when he enters
+Javascript event listeners allow you to execute code when the user clicks a button when he enterss

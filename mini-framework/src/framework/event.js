@@ -23,16 +23,6 @@ const inputComponent = {
   },
 };
 
-// Registry (stors event handlers) 
-// const registry = {
-//   handlers: {},
-//   register(eleID, eventType, handlers) {
-
-//   }
-// }
-
-
-
 /*************🌟 Attach Listener 🌟*************/
 // function attachLister(element, eventType, handler) {
 //   if (!element || !eventType || !handler) return;
@@ -44,6 +34,9 @@ const inputComponent = {
 //   element.addEventLister
 // }
 
+function getHandler(elementId, eventType) {
+  return handlers[elementId]?.[eventType];
+}
 
 /*************🌟 Init Event System 🌟*************/
 function initEventSystem(container = document) {
@@ -65,3 +58,8 @@ function findRegisteredElement(event) {
   return null
 }
 
+
+
+function registry() {
+   
+}

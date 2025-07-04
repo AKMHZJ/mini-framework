@@ -69,3 +69,6 @@ const input = document.createElement(inputComponent.tag);
 
   // Simuler appui sur une autre touche
   input.dispatchEvent(new KeyboardEvent("keypress", { key: "a" })); // Aucun message
+
+
+  

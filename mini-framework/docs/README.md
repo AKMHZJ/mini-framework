@@ -15,4 +15,28 @@ It provides a structured way to build web applications, enforce best practices, 
 
 - *Event Listeners:* A javascript event listener is essentially a JavaScript function that waits for a specific event to occur and then executes a callback function to respond to that event. Event listeners and event handlers are often considered the same thing. However, in essence, they work together to respond to an event.
 
-Javascript event listeners allow you to execute code when the user clicks a button when he enterss
+
+- registry(element, eventType, handler) – Maps elements to their event types and handlers.
+
+- findRegisteredElement(event) – Implements event delegation by finding the closest element with a registered handler
+
+- attachListener(element, eventType, handler) – Uses onclick properties instead of addEventListener
+
+- initEventSystem() – Sets up listeners for all supported events at the document level
+
+- on(element, eventType, handler) – Main function to register an event handler
+
+
+
+Comment l'utiliser :
+const button = document.querySelector('#myButton');
+
+// Attacher un handler
+on(button, 'click', function(event) {
+    console.log('Bouton cliqué !');
+});
+
+// Utiliser les fonctions helper
+attachToElement('#myInput', 'input', function(event) {
+    console.log('Valeur:', event.target.value);
+});

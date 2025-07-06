@@ -25,18 +25,3 @@ It provides a structured way to build web applications, enforce best practices, 
 - initEventSystem() – Sets up listeners for all supported events at the document level
 
 - on(element, eventType, handler) – Main function to register an event handler
-
-
-
-Comment l'utiliser :
-const button = document.querySelector('#myButton');
-
-// Attacher un handler
-on(button, 'click', function(event) {
-    console.log('Bouton cliqué !');
-});
-
-// Utiliser les fonctions helper
-attachToElement('#myInput', 'input', function(event) {
-    console.log('Valeur:', event.target.value);
-});

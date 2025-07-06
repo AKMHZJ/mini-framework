@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Event System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .test-section {
+            background: white;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .test-section h2 {
+            color: #333;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        
+        .button {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 16px;
+        }
+        
+        .button:hover {
+            background: #45a049;
+        }
+        
+        .danger {
+            background: #f44336;
+        }
+        
+        .danger:hover {
+            background: #da190b;
+        }
+        
+        .warning {
+            background: #ff9800;
+        }
+        
+        .warning:hover {
+            background: #e68900;
+        }
+        
+        .info {
+            background: #2196F3;
+        }
+        
+        .info:hover {
+            background: #1976D2;
+        }
+        
+        .input-group {
+            margin: 10px 0;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        .log-area {
+            background: #1a1a1a;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 4px;
+            min-height: 150px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+        
+        .clickable-box {
+            background: #e3f2fd;
+            border: 2px solid #2196F3;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+        }
+        
+        .clickable-box:hover {
+            background: #bbdefb;
+        }
+        
+        .nested-container {
+            background: #fff3e0;
+            border: 2px solid #ff9800;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        
+        .nested-child {
+            background: #ffecb3;
+            border: 1px solid #ffc107;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .counter {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2196F3;
+            margin: 10px 0;
+        }
+        
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .clear-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test de l'Event System</h1>
+    
+    <!-- Section 1: Tests de base -->
+    <div class="test-section">
+        <h2>1. Tests de Base - Fonction 'on'</h2>
+        <button id="basicButton" class="button">Clic Simple</button>
+        <button id="multiHandlerButton" class="button">Multi-Handlers</button>
+        <button id="parameterButton" class="button" data-message="Hello World!">Bouton avec Paramètres</button>
+        
+        <div class="status" id="basicStatus">En attente...</div>
+    </div>
+    
+    <!-- Section 2: Tests d'input -->
+    <div class="test-section">
+        <h2>2. Tests d'Input et Keyboard</h2>
+        <div class="input-group">
+            <label for="testInput">Tapez quelque chose :</label>
+            <input type="text" id="testInput" placeholder="Tapez ici...">
+        </div>
+        
+        <div class="input-group">
+            <label for="enterInput">Appuyez sur Entrée :</label>
+            <input type="text" id="enterInput" placeholder="Tapez et appuyez sur Entrée">
+        </div>
+        
+        <div class="input-group">
+            <label for="focusInput">Test Focus/Blur :</label>
+            <input type="text" id="focusInput" placeholder="Cliquez dedans puis dehors">
+        </div>
+    </div>
+    
+    <!-- Section 3: Tests des helpers -->
+    <div class="test-section">
+        <h2>3. Tests des Fonctions Helper</h2>
+        <button class="button clickable-element">Élément 1</button>
+        <button class="button clickable-element">Élément 2</button>
+        <button class="button clickable-element">Élément 3</button>
+        
+        <div class="clickable-box" id="singleElement">
+            Cliquez sur cette boîte (attachToElement)
+        </div>
+    </div>
+    
+    <!-- Section 4: Tests de délégation -->
+    <div class="test-section">
+        <h2>4. Tests de Délégation d'Événements</h2>
+        <div class="nested-container" id="parentContainer">
+            <h3>Container Parent</h3>
+            <div class="nested-child" data-child="1">Enfant 1</div>
+            <div class="nested-child" data-child="2">Enfant 2</div>
+            <div class="nested-child" data-child="3">Enfant 3</div>
+        </div>
+        
+        <button id="addChild" class="button">Ajouter un Enfant</button>
+    </div>
+    
+    <!-- Section 5: Tests de suppression -->
+    <div class="test-section">
+        <h2>5. Tests de Suppression - Fonction 'off'</h2>
+        <button id="removeButton" class="button">Bouton avec Handler</button>
+        <button id="removeSpecific" class="button danger">Supprimer Handler Spécifique</button>
+        <button id="removeAll" class="button warning">Supprimer Tous les Handlers</button>
+        <button id="addBack" class="button info">Remettre les Handlers</button>
+        
+        <div class="status" id="removeStatus">Handlers actifs</div>
+    </div>
+    
+    <!-- Section 6: Tests de performance -->
+    <div class="test-section">
+        <h2>6. Tests de Performance</h2>
+        <div class="counter" id="clickCounter">Clics: 0</div>
+        <button id="counterButton" class="button">Cliquer Rapidement</button>
+        <button id="resetCounter" class="button warning">Reset</button>
+        
+        <div class="input-group">
+            <label>Test typing rapide :</label>
+            <input type="text" id="performanceInput" placeholder="Tapez très vite...">
+        </div>
+        <div>Caractères tapés: <span id="charCount">0</span></div>
+    </div>
+    
+    <!-- Section 7: Tests d'événements multiples -->
+    <div class="test-section">
+        <h2>7. Tests d'Événements Multiples</h2>
+        <div class="clickable-box" id="multiEventBox">
+            Hover, cliquez, double-cliquez sur cette boîte
+        </div>
+        <div class="status" id="multiEventStatus">Aucun événement</div>
+    </div>
+    
+    <!-- Zone de log -->
+    <div class="test-section">
+        <h2>📋 Console Log</h2>
+        <button class="clear-btn" onclick="clearLog()">Vider</button>
+        <div class="log-area" id="logArea"></div>
+    </div>
+
+    <script>
+        // Event handling system (copié de l'artefact précédent)
+        const handlers = new Map();
+        const eventHandlers = new Map();
+        let eventSystemInitialized = false;
+        let elementIdCounter = 0;
+
+        const supportedEvents = [
+            'click', 'dblclick', 'mousedown', 'mouseup', 'mouseover', 'mouseout',
+            'keydown', 'keyup', 'keypress', 'input', 'change', 'focus', 'blur',
+            'submit', 'reset', 'scroll', 'resize', 'load', 'unload'
+        ];
+
+        function registry(element, eventType, handler) {
+           
+        }
+
+        function findRegisteredElement(event) {
+           
+        }
+
+        function handleDocumentEvent(event) {
+            const match = findRegisteredElement(event);
+            
+            if (match) {
+                match.handlers.forEach(handler => {
+                    try {
+                        handler(event);
+                    } catch (error) {
+                        logMessage('Error executing event handler: ' + error.message);
+                    }
+                });
+            }
+        }
+
+        function initEventSystem(container = document) {
+        
+        }
+
+        function on(element, eventType, handler) {
+            
+            if (!eventSystemInitialized) {
+                initEventSystem();
+            }
+            
+            registry(element, eventType, handler);
+        }
+
+        function attachToElement(selector, eventType, handler) {
+            const element = document.querySelector(selector);
+            if (element) {
+                on(element, eventType, handler);
+            } else {
+                logMessage('Warning: Element not found: ' + selector);
+            }
+        }
+
+        function attachToElements(selector, eventType, handler) {
+            const elements = document.querySelectorAll(selector);
+            elements.forEach(element => {
+                on(element, eventType, handler);
+            });
+        }
+
+        function off(element, eventType, specificHandler) {
+           
+        }
+
+        // Fonction de logging
+        function logMessage(message) {
+            const logArea = document.getElementById('logArea');
+            const timestamp = new Date().toLocaleTimeString();
+            logArea.innerHTML += `[${timestamp}] ${message}\n`;
+            logArea.scrollTop = logArea.scrollHeight;
+        }
+
+        function clearLog() {
+            document.getElementById('logArea').innerHTML = '';
+        }
+
+        // Variables pour les tests
+        let clickCount = 0;
+        let charCount = 0;
+        let childCount = 3;
+
+        // Handlers pour les tests
+        const handler1 = (e) => {
+            logMessage('Handler 1 exécuté');
+            document.getElementById('basicStatus').textContent = 'Handler 1 exécuté!';
+            document.getElementById('basicStatus').className = 'status success';
+        };
+
+        const handler2 = (e) => {
+            logMessage('Handler 2 exécuté');
+        };
+
+        const handler3 = (e) => {
+            logMessage('Handler 3 exécuté');
+        };
+
+        // Initialisation des tests
+        document.addEventListener('DOMContentLoaded', function() {
+            logMessage('🚀 Initialisation des tests...');
+            
+            // Test 1: Tests de base
+            on(document.getElementById('basicButton'), 'click', (e) => {
+                logMessage('✅ Clic simple détecté');
+                document.getElementById('basicStatus').textContent = 'Clic simple réussi!';
+                document.getElementById('basicStatus').className = 'status success';
+            });
+
+            on(document.getElementById('multiHandlerButton'), 'click', handler1);
+            on(document.getElementById('multiHandlerButton'), 'click', handler2);
+            on(document.getElementById('multiHandlerButton'), 'click', handler3);
+
+            on(document.getElementById('parameterButton'), 'click', (e) => {
+                const message = e.target.dataset.message;
+                logMessage(`✅ Paramètre reçu: ${message}`);
+                alert(`Message: ${message}`);
+            });
+
+            // Test 2: Tests d'input
+            on(document.getElementById('testInput'), 'input', (e) => {
+                logMessage(`Input détecté: "${e.target.value}"`);
+            });
+
+            on(document.getElementById('enterInput'), 'keydown', (e) => {
+                if (e.key === 'Enter') {
+                    logMessage(`✅ Entrée pressée avec la valeur: "${e.target.value}"`);
+                    alert(`Vous avez tapé: ${e.target.value}`);
+                }
+            });
+
+            on(document.getElementById('focusInput'), 'focus', (e) => {
+                logMessage('✅ Focus sur l\'input');
+                e.target.style.backgroundColor = '#e3f2fd';
+            });
+
+            on(document.getElementById('focusInput'), 'blur', (e) => {
+                logMessage('✅ Blur sur l\'input');
+                e.target.style.backgroundColor = '';
+            });
+
+            // Test 3: Tests des helpers
+            attachToElements('.clickable-element', 'click', (e) => {
+                logMessage(`✅ Élément cliqué: ${e.target.textContent}`);
+                e.target.style.backgroundColor = '#4CAF50';
+                setTimeout(() => {
+                    e.target.style.backgroundColor = '';
+                }, 500);
+            });
+
+            attachToElement('#singleElement', 'click', (e) => {
+                logMessage('✅ AttachToElement fonctionne!');
+                e.target.style.backgroundColor = '#2196F3';
+                setTimeout(() => {
+                    e.target.style.backgroundColor = '';
+                }, 500);
+            });
+
+            // Test 4: Tests de délégation
+            on(document.getElementById('parentContainer'), 'click', (e) => {
+                if (e.target.classList.contains('nested-child')) {
+                    const childNum = e.target.dataset.child;
+                    logMessage(`✅ Délégation: enfant ${childNum} cliqué`);
+                    e.target.style.backgroundColor = '#ffab00';
+                    setTimeout(() => {
+                        e.target.style.backgroundColor = '';
+                    }, 500);
+                }
+            });
+
+            on(document.getElementById('addChild'), 'click', (e) => {
+                childCount++;
+                const newChild = document.createElement('div');
+                newChild.className = 'nested-child';
+                newChild.dataset.child = childCount;
+                newChild.textContent = `Enfant ${childCount}`;
+                document.getElementById('parentContainer').appendChild(newChild);
+                logMessage(`✅ Nouvel enfant ajouté: ${childCount}`);
+            });
+
+            // Test 5: Tests de suppression
+            on(document.getElementById('removeButton'), 'click', handler1);
+            on(document.getElementById('removeButton'), 'click', handler2);
+
+            on(document.getElementById('removeSpecific'), 'click', (e) => {
+                off(document.getElementById('removeButton'), 'click', handler1);
+                document.getElementById('removeStatus').textContent = 'Handler 1 supprimé';
+                document.getElementById('removeStatus').className = 'status error';
+                logMessage('✅ Handler spécifique supprimé');
+            });
+
+            on(document.getElementById('removeAll'), 'click', (e) => {
+                off(document.getElementById('removeButton'), 'click');
+                document.getElementById('removeStatus').textContent = 'Tous les handlers supprimés';
+                document.getElementById('removeStatus').className = 'status error';
+                logMessage('✅ Tous les handlers supprimés');
+            });
+
+            on(document.getElementById('addBack'), 'click', (e) => {
+                on(document.getElementById('removeButton'), 'click', handler1);
+                on(document.getElementById('removeButton'), 'click', handler2);
+                document.getElementById('removeStatus').textContent = 'Handlers remis';
+                document.getElementById('removeStatus').className = 'status success';
+                logMessage('✅ Handlers remis');
+            });
+
+            // Test 6: Tests de performance
+            on(document.getElementById('counterButton'), 'click', (e) => {
+                clickCount++;
+                document.getElementById('clickCounter').textContent = `Clics: ${clickCount}`;
+                logMessage(`Click #${clickCount}`);
+            });
+
+            on(document.getElementById('resetCounter'), 'click', (e) => {
+                clickCount = 0;
+                document.getElementById('clickCounter').textContent = 'Clics: 0';
+                logMessage('✅ Compteur remis à zéro');
+            });
+
+            on(document.getElementById('performanceInput'), 'input', (e) => {
+                charCount = e.target.value.length;
+                document.getElementById('charCount').textContent = charCount;
+            });
+
+            // Test 7: Tests d'événements multiples
+            const multiEventBox = document.getElementById('multiEventBox');
+            const multiEventStatus = document.getElementById('multiEventStatus');
+
+            on(multiEventBox, 'click', (e) => {
+                multiEventStatus.textContent = 'Clic détecté';
+                multiEventStatus.className = 'status success';
+                logMessage('✅ Clic sur la boîte multi-événements');
+            });
+
+            on(multiEventBox, 'dblclick', (e) => {
+                multiEventStatus.textContent = 'Double-clic détecté';
+                multiEventStatus.className = 'status success';
+                logMessage('✅ Double-clic sur la boîte multi-événements');
+            });
+
+            on(multiEventBox, 'mouseover', (e) => {
+                multiEventStatus.textContent = 'Survol détecté';
+                multiEventStatus.className = 'status success';
+                e.target.style.backgroundColor = '#bbdefb';
+            });
+
+            on(multiEventBox, 'mouseout', (e) => {
+                e.target.style.backgroundColor = '';
+            });
+
+            logMessage('✅ Tous les tests initialisés avec succès!');
+        });
+    </script>
+</body>
+</html>

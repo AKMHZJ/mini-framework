@@ -1,38 +1,48 @@
-// Routing system implementation
+/* ========= framework/router.js – final, with hook-reset ========= */
 
 import { render } from "./dom.js";
+import { getState, setState, resetHookIndex } from "./state.js";
 
 let routes = [];
-let container = document.getElementById('app');
+const container = document.getElementById("app");
 
-function matchRoute(path){
-    const cleanPath = path.replace(/^#\//, '');
-    return routes.find(route => {
-        return route.path === cleanPath || (cleanPath === '' && route.path === '/all');
-    }) || routes[0];
+/* helper: pick the route that matches the current #hash */
+function matchRoute(hash) {
+  const clean = hash.replace(/^#\/?/, "");           // "#/active" → "active"
+  return (
+    routes.find((r) => r.path.slice(1) === clean) || routes[0]  // default /all
+  );
 }
 
-function renderRoute(){
-    const path = window.location.hash || '#all';
-    const route = matchRoute(path);
-    if (route){
-        const vnode = route.view();
-        render(vnode, container);
-    }
+/* central render function */
+function renderRoute() {
+  const hash  = window.location.hash || "#/all";
+  const route = matchRoute(hash);
+  if (!route) return;
+
+  /* keep state.filter in sync with the URL */
+  const state      = getState();
+  const newFilter  = route.path.slice(1) || "all";
+  if (state.filter !== newFilter) {
+    setState({ ...state, filter: newFilter });
+  }
+
+  resetHookIndex();                 // ←  make hooks start from 0
+  const vnode = route.view();
+  render(vnode, container);
 }
 
-export function defineRoutes(newRoutes) {
-    routes = newRoutes;
+/* public API */
+export function defineRoutes(rs) {
+  routes = rs;
 }
 
-
-export function navigate(path) {
-    window.location.hash = `#${path}`
-    renderRoute();
+export function navigate(path /* "/all" | "/active" | "/completed" */) {
+  window.location.hash = `#${path}`;
+  /* hashchange listener will call renderRoute() */
 }
-
 
 export function initRouter() {
-    renderRoute();
-    window.onhashchange = renderRoute();
+  window.addEventListener("hashchange", renderRoute);
+  renderRoute();                     // initial render
 }

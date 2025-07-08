@@ -2,13 +2,19 @@
 
 const handlers = new Map();
 
-function attachListener(element, eventType, callback) {
-  element[`on${eventType}`] = callback;
+/* attach a single delegated listener to the root container */
+function attachListener(root, eventType) {
+  root.addEventListener(eventType, (event) => {
+    const target = findRegisteredElement(event.target, eventType);
+    if (target) {
+      handlers.get(target).get(eventType)(event);
+    }
+  });
 }
 
-function findRegisteredElement(target, eventType) {
-  let current = target;
-
+/* walk up the DOM tree to find the first element that registered this event */
+function findRegisteredElement(node, eventType) {
+  let current = node;
   while (current) {
     if (handlers.has(current) && handlers.get(current).has(eventType)) {
       return current;
@@ -33,29 +39,25 @@ function findRegisteredElement(target, eventType) {
 // }
 
 
-// Register a handler for an event on an element.
+/* public: register an event handler on any element */
 export function on(eventType, element, handler) {
-    if (!handlers.has(element)) {
-    handlers.set(element, new Map());
-  }
+  if (!handlers.has(element)) handlers.set(element, new Map());
   handlers.get(element).set(eventType, handler);
 }
 
 
-
-
-
-// Set up the root listener.
+/* public: one-time bootstrapping on the root container */
 export function initEventSystem(container) {
-  const eventTypes = ["click", "keypress", "scroll", "input", "change"];
+  const eventTypes = [
+    "click",
+    "input",
+    "dblclick",      // ← NEW: needed for label editing
+    "change",
+    "keypress",  // still needed for edit-Enter handler
+    "keydown",   // <— needed for add-todo Enter + Esc in edit field
+    "keyup",
+    "scroll",
+  ];
 
-  eventTypes.forEach((eventType) => {
-    attachListener(container, eventType, (event) => {
-      const registeredElement = findRegisteredElement(event.target, eventType);
-      if (registeredElement) {
-        const handler = handlers.get(registeredElement).get(eventType);
-        handler(event);
-      }
-    });
-  });
+  eventTypes.forEach((type) => attachListener(container, type));
 }
